@@ -6,7 +6,7 @@ import pandas as pd
 st.set_page_config(page_title="Capsule 1.0 Multi-Scanner", layout="wide")
 st.title("🚀 Capsule 1.0 Multi-Timeframe Scanner")
 
-stocks = ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HINDUNILVR.NS", "SBIN.NS"]
+stocks = ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HINDUNILVR.NS", "MANGLMCEM.NS"]
 
 def check_capsule_strategy(ticker, interval):
     try:
