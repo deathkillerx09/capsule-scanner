@@ -16,8 +16,7 @@ def check_capsule_strategy(ticker):
         # Download data
         data = yf.download(ticker, period="6mo", interval="1d", progress=False)
         
-        # --- THE FIX --- 
-        # yfinance often returns MultiIndex columns. This flattens them so code can read 'Close', 'High', etc.
+        # FIX: Ensure columns are flattened if they are MultiIndex
         if isinstance(data.columns, pd.MultiIndex):
             data.columns = data.columns.get_level_values(0)
             
@@ -28,7 +27,7 @@ def check_capsule_strategy(ticker):
         data['EMA_9'] = ta.ema(data['Close'], length=9)
         macd = ta.macd(data['Close'], fast=12, slow=26, signal=9)
         
-        # Safely assign MACD values
+        # Safely extract MACD
         if macd is not None:
             data['MACD'] = macd.iloc[:, 0]
             data['MACD_Signal'] = macd.iloc[:, 1]
