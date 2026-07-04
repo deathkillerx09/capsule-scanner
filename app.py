@@ -1,12 +1,20 @@
+import streamlit as st
+import yfinance as yf
+import pandas_ta as ta
+import pandas as pd
+
+# 1. Setup the Web Page
+st.set_page_config(page_title="Capsule 1.0 Scanner", layout="centered")
+st.title("🚀 Capsule 1.0 Scanner")
+
+# 2. Your Stock List
+stocks = ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HINDUNILVR.NS", "SBIN.NS"]
+
 # 3. The "Capsule 1.0" Logic
 def check_capsule_strategy(ticker):
     try:
         data = yf.download(ticker, period="6mo", interval="1d", progress=False)
         
-        # This prevents the MultiIndex error common in yfinance
-        if isinstance(data.columns, pd.MultiIndex):
-            data.columns = data.columns.droplevel(1)
-
         # Calculate Indicators
         data['EMA_9'] = ta.ema(data['Close'], length=9)
         macd = ta.macd(data['Close'], fast=12, slow=26, signal=9)
@@ -16,7 +24,7 @@ def check_capsule_strategy(ticker):
         data['CCI'] = ta.cci(data['High'], data['Low'], data['Close'], length=20)
         
         data = data.dropna()
-        if data.empty: return "No Data"
+        if data.empty: return None
         
         last = data.iloc[-1]
         
@@ -27,5 +35,21 @@ def check_capsule_strategy(ticker):
                      (last['CCI'] > 100)
                      
         return "✅ BUY" if is_bullish else "❌ WATCH"
-    except Exception as e:
-        return f"Error: {e}"
+    except:
+        return "⚠️ ERROR"
+
+# 4. Create the Dashboard Table
+st.write("Scanning your stocks for Capsule 1.0 setup...")
+
+results = []
+for ticker in stocks:
+    status = check_capsule_strategy(ticker)
+    results.append({"Ticker": ticker, "Status": status})
+
+# Display the table
+df = pd.DataFrame(results)
+st.table(df)
+
+# Button to refresh
+if st.button('Refresh Data'):
+    st.rerun()
